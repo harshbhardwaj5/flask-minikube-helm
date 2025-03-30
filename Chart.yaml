@@ -1,0 +1,4 @@
+apiVersion: v2
+name: flask-app
+description: Simple Flask Helm chart for Minikube
+version: 0.1.0

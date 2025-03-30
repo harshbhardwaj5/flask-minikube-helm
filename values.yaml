@@ -1,0 +1,10 @@
+replicaCount: 1
+image:
+  repository: flask-k8s-app
+  tag: latest
+  pullPolicy: Never
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: 5000
