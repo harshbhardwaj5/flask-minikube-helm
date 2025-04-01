@@ -1,26 +1,53 @@
-name: CI - Build & Push Image
+name: Build and Deploy Flask App
 
 on:
   push:
+    paths:
+      - 'app.py'
     branches:
       - main
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Repository
+      - name: 🔍 Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Log in to Docker Hub
+      - name: 🔐 Docker Hub Login
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and Push Docker Image (tag: latest)
+      - name: 🏷️ Extract Metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: harshking/flask-k8s-app
+
+      - name: 🐳 Build and Push Image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: harshking/flask-k8s-app:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: 📝 Update Helm values.yaml
+        run: |
+          TAG=$(echo "${{ steps.meta.outputs.tags }}" | cut -d',' -f1 | cut -d':' -f2)
+          sed -i 's|tag: .*|tag: '"$TAG"'|' helm-chart/values.yaml
+
+      - name: 💾 Commit & Push Updated values.yaml
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}
+          git add helm-chart/values.yaml
+          git commit -m "auto: update image tag to $TAG" || echo "No changes to commit"
+          git push origin main || echo "Nothing to push"
+
