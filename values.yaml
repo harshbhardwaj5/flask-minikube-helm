@@ -1,7 +1,7 @@
 replicaCount: 1
 image:
   repository: flask-k8s-app
-  tag: 4a644ff
+  tag: 9ce15fa
   pullPolicy: Always
 
 service:
