@@ -36,6 +36,12 @@ jobs:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
+        
+    - name: 🔍 Debug File System
+      run: |
+        ls -la
+        cat values.yaml || echo "values.yaml not found!"
+
 
     - name: Update values.yaml with new image tag
       run: |
