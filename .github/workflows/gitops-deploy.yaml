@@ -34,7 +34,8 @@ jobs:
 
     - name: 📝 Update Helm values.yaml with new image tag
       run: |
-        sed -i "/repository: $IMAGE_REPO/{n;s/tag:.*/tag: '${{ env.SHORT_SHA }}'/}" values.yaml
+        sed -i "/repository: $IMAGE_REPO/{n;s|tag: .*|tag: '${{ env.SHORT_SHA }}'|}" values.yaml
+
 
     - name: 💾 Commit updated Helm chart
       env:
