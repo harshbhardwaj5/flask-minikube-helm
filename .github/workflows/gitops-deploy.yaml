@@ -9,8 +9,11 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
+    env:
+      IMAGE_REPO: harshking/flask-app
+
     steps:
-    - name: �� Checkout repo
+    - name: 🧾 Checkout repo
       uses: actions/checkout@v3
 
     - name: 🔐 Login to Docker Hub
@@ -20,7 +23,6 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: 🔧 Generate short commit SHA as image tag
-      id: vars
       run: echo "SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
 
     - name: 🛠️ Build and push Docker image to Docker Hub
@@ -28,11 +30,11 @@ jobs:
       with:
         context: .
         push: true
-        tags: harshking/flask-k8s-app:${{ env.SHORT_SHA }}
+        tags: ${{ env.IMAGE_REPO }}:${{ env.SHORT_SHA }}
 
     - name: 📝 Update Helm values.yaml with new image tag
       run: |
-        sed -i 's|tag: .*|tag: '${{ env.SHORT_SHA }}'|' values.yaml
+        sed -i "/repository: $IMAGE_REPO/{n;s/tag:.*/tag: '${{ env.SHORT_SHA }}'/}" values.yaml
 
     - name: 💾 Commit updated Helm chart
       env:
@@ -41,14 +43,9 @@ jobs:
         git config user.name "github-actions"
         git config user.email "actions@github.com"
         git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}
-    
-        # 👇 Add and stage the updated file before pulling
+
         git add values.yaml
-    
-        # 👇 Pull latest with rebase to avoid merge conflicts
         git pull origin main --rebase || echo "No new changes to rebase"
-    
-        # 👇 Safely commit & push
         git commit -am "auto: update image tag to ${{ env.SHORT_SHA }}" || echo "No changes to commit"
         git push origin main
 
