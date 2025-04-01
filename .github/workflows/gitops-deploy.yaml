@@ -2,8 +2,6 @@ name: Build and Deploy Flask App
 
 on:
   push:
-    paths:
-      - 'app.py'
     branches:
       - main
 
@@ -36,18 +34,12 @@ jobs:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-        
-    - name: 🔍 Debug File System
-      run: |
-        ls -la
-        cat values.yaml || echo "values.yaml not found!"
-
 
     - name: Update values.yaml with new image tag
       run: |
         TAG=$(echo "${{ steps.meta.outputs.tags }}" | cut -d',' -f1 | cut -d':' -f2)
         echo "New tag is $TAG"
-        sed -i "s|tag: .*|tag: $TAG|" values.yaml
+        sed -i "s|\(tag:\s*\).*|\1$TAG|" values.yaml
       shell: bash
 
     - name: Commit updated Helm values
