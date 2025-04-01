@@ -5,15 +5,15 @@ on:
     branches:
       - main
 
+env:
+  IMAGE_REPO: harshking/flask-app
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
-    env:
-      IMAGE_REPO: harshking/flask-app
-
     steps:
-    - name: 🧾 Checkout repo
+    - name: ✅ Checkout repo
       uses: actions/checkout@v3
 
     - name: 🔐 Login to Docker Hub
@@ -22,10 +22,10 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: 🔧 Generate short commit SHA as image tag
+    - name: 🧠 Generate short SHA tag
       run: echo "SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
 
-    - name: 🛠️ Build and push Docker image to Docker Hub
+    - name: 🐳 Build & Push Docker image
       uses: docker/build-push-action@v5
       with:
         context: .
@@ -36,8 +36,7 @@ jobs:
       run: |
         sed -i "/repository: $IMAGE_REPO/{n;s|tag: .*|tag: '${{ env.SHORT_SHA }}'|}" values.yaml
 
-
-    - name: 💾 Commit updated Helm chart
+    - name: 💾 Commit updated tag (only if changed)
       env:
         GH_TOKEN: ${{ secrets.GH_PAT }}
       run: |
@@ -46,7 +45,5 @@ jobs:
         git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}
 
         git add values.yaml
-        git pull origin main --rebase || echo "No new changes to rebase"
-        git commit -am "auto: update image tag to ${{ env.SHORT_SHA }}" || echo "No changes to commit"
+        git diff --cached --quiet || git commit -m "auto: update image tag to ${{ env.SHORT_SHA }}"
         git push origin main
-
