@@ -35,6 +35,10 @@ jobs:
       - name: Set up Minikube
         uses: medyagh/setup-minikube@latest
 
+      - name: Update Helm Chart to use latest image
+        run: |
+          sed -i 's|tag: .*|tag: latest|' helm-chart/values.yaml
+
       - name: Deploy to Minikube
         run: |
           helm upgrade --install flask-app ./helm-chart --namespace flask --create-namespace
