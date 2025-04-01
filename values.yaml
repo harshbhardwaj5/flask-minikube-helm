@@ -2,8 +2,7 @@ image:
   repository: harshking/flask-app
   tag: latest
   pullPolicy: Always
-
-
+  
 replicaCount: 1
 
 service:
