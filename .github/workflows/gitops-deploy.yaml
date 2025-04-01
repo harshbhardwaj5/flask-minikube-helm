@@ -42,8 +42,13 @@ jobs:
         git config user.email "actions@github.com"
         git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}
     
+        # 👇 Add and stage the updated file before pulling
         git add values.yaml
-        git pull origin main --rebase
     
-        git commit -m "auto: update image tag to ${{ env.SHORT_SHA }}"
+        # 👇 Pull latest with rebase to avoid merge conflicts
+        git pull origin main --rebase || echo "No new changes to rebase"
+    
+        # 👇 Safely commit & push
+        git commit -am "auto: update image tag to ${{ env.SHORT_SHA }}" || echo "No changes to commit"
         git push origin main
+
