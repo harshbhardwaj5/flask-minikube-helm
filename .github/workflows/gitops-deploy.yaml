@@ -34,7 +34,7 @@ jobs:
       run: |
         sed -i 's|tag: .*|tag: '${{ env.SHORT_SHA }}'|' values.yaml
 
-    - name: 💾 Commit updated Helm chart with new tag
+    - name: 💾 Commit updated Helm chart
       env:
         GH_TOKEN: ${{ secrets.GH_PAT }}
       run: |
