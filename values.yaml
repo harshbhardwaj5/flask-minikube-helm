@@ -1,7 +1,8 @@
 image:
   repository: harshking/flask-app
-  tag: latest  # this will be auto-replaced by GitHub Actions
+  tag: latest
   pullPolicy: Always
+
 
 replicaCount: 1
 
