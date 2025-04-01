@@ -1,8 +1,9 @@
-replicaCount: 1
 image:
-  repository: harshking/flask-k8s-app
-  tag: latest
+  repository: harshking/flask-app
+  tag: latest  # this will be auto-replaced by GitHub Actions
   pullPolicy: Always
+
+replicaCount: 1
 
 service:
   type: NodePort
