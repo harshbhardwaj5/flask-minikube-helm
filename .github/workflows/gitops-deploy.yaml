@@ -41,7 +41,7 @@ jobs:
       run: |
         TAG=$(echo "${{ steps.meta.outputs.tags }}" | cut -d',' -f1 | cut -d':' -f2)
         echo "New tag is $TAG"
-        sed -i "s|tag: .*|tag: $TAG|" helm-chart/values.yaml
+        sed -i "s|tag: .*|tag: $TAG|" values.yaml
       shell: bash
 
     - name: Commit updated Helm values
@@ -51,6 +51,6 @@ jobs:
         git config user.name "github-actions"
         git config user.email "actions@github.com"
         git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}
-        git add helm-chart/values.yaml
+        git add values.yaml
         git commit -m "auto: update image tag to $TAG" || echo "No changes to commit"
         git push origin main
