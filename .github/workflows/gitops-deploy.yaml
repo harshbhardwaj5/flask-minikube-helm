@@ -37,11 +37,12 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
 
-    - name: Update Helm values.yaml with new tag
+    - name: Update values.yaml with new image tag
       run: |
         TAG=$(echo "${{ steps.meta.outputs.tags }}" | cut -d',' -f1 | cut -d':' -f2)
-        echo "Using tag: $TAG"
+        echo "New tag is $TAG"
         sed -i "s|tag: .*|tag: $TAG|" helm-chart/values.yaml
+      shell: bash
 
     - name: Commit updated Helm values
       env:
