@@ -1,6 +1,6 @@
 image:
   repository: harshking/flask-k8s-app
-  tag: latest
+  tag: sha-7469ede
   pullPolicy: Always
   
 replicaCount: 1
