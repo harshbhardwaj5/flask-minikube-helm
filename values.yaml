@@ -1,5 +1,5 @@
 image:
-  repository: harshking/flask-app
+  repository: harshking/flask-k8s-app
   tag: latest
   pullPolicy: Always
   
