@@ -1,0 +1,20 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: block-hostpath
+spec:
+  validationFailureAction: enforce
+  background: true
+  rules:
+    - name: block-hostpath
+      match:
+        resources:
+          kinds:
+            - Pod
+      validate:
+        message: "Use of hostPath volumes is not allowed."
+        pattern:
+          spec:
+            volumes:
+              - X(hostPath): "*"
+
