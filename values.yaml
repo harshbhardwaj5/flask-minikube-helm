@@ -1,7 +1,7 @@
 replicaCount: 1
 image:
   repository: harshking/flask-k8s-app
-  tag: latest
+  tag: sha-6147610
   pullPolicy: Always
 service:
   type: NodePort
